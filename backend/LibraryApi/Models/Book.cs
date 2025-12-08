@@ -11,4 +11,6 @@ public class Book
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
 
+    public ICollection<Category> Categories {get; set; } = new List<Category>();
+
 }

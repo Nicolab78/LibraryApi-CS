@@ -11,6 +11,7 @@ public class ApplicationDbContext : DbContext
     }
 
     public DbSet<Book> Books { get; set; }
+    public DbSet<Category> Categories { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -23,5 +24,16 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.Author).IsRequired().HasMaxLength(100);
             entity.Property(e => e.Isbn).HasMaxLength(20);
         });
+
+        modelBuilder.Entity<Category>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<Book>()
+            .HasMany(b => b.Categories)
+            .WithMany(c => c.Books)
+            .UsingEntity(j => j.ToTable("BookCategories"));
     }
 }

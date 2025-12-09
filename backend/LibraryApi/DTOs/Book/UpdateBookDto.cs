@@ -7,4 +7,5 @@ public class UpdateBookDto
     public string? Isbn { get; set; }
     public int? PublishedYear { get; set; }
     public bool IsRead { get; set; }
+    public List<int> CategoryIds { get; set; } = new List<int>();
 }

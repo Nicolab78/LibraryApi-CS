@@ -11,4 +11,5 @@ public class BookDto
     public bool IsRead { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
+    public List<int> CategoryIds { get; set; } = new List<int>();
 }

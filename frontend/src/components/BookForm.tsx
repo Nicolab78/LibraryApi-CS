@@ -1,16 +1,19 @@
 import { useState } from 'react';
 import type { CreateBookDto } from '../types/books';
+import type { Category } from '../types/categories';
 
 interface BookFormProps {
   onSubmit: (book: CreateBookDto) => void;
+  categories: Category[];
 }
 
-export function BookForm({ onSubmit }: BookFormProps) {
+export function BookForm({ onSubmit, categories }: BookFormProps) {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [isbn, setIsbn] = useState('');
   const [publishedYear, setPublishedYear] = useState('');
   const [isRead, setIsRead] = useState(false);
+  const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,15 +24,26 @@ export function BookForm({ onSubmit }: BookFormProps) {
       isbn: isbn || undefined,
       publishedYear: publishedYear ? parseInt(publishedYear) : undefined,
       isRead,
+      categoryIds: selectedCategories,
     };
 
     onSubmit(newBook);
 
+    // Reset du formulaire
     setTitle('');
     setAuthor('');
     setIsbn('');
     setPublishedYear('');
     setIsRead(false);
+    setSelectedCategories([]);
+  };
+
+  const handleCategoryToggle = (categoryId: number) => {
+    if (selectedCategories.includes(categoryId)) {
+      setSelectedCategories(selectedCategories.filter(id => id !== categoryId));
+    } else {
+      setSelectedCategories([...selectedCategories, categoryId]);
+    }
   };
 
   return (
@@ -76,6 +90,22 @@ export function BookForm({ onSubmit }: BookFormProps) {
           value={publishedYear}
           onChange={(e) => setPublishedYear(e.target.value)}
         />
+      </div>
+
+      <div className="form-group">
+        <label>Catégories</label>
+        <div className="category-checkboxes">
+          {categories.map((category) => (
+            <label key={category.id} className="checkbox-label">
+              <input
+                type="checkbox"
+                checked={selectedCategories.includes(category.id)}
+                onChange={() => handleCategoryToggle(category.id)}
+              />
+              {category.name}
+            </label>
+          ))}
+        </div>
       </div>
 
       <div className="form-group">

@@ -3,36 +3,19 @@ using LibraryApi.DTOs.Book;
 using LibraryApi.Models;
 using LibraryApi.Repositories.Interfaces;
 using LibraryApi.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace LibraryApi.Services;
 
 public class BookService : IBookService
 {
     private readonly IBookRepository _bookRepository;
+    private readonly ICategoryRepository _categoryRepository;
 
-    public BookService(IBookRepository bookRepository)
+    public BookService(IBookRepository bookRepository, ICategoryRepository categoryRepository)
     {
         _bookRepository = bookRepository;
-    }
-
-    public async Task<BookDto> CreateBookAsync(CreateBookDto createBookDto)
-    {
-        var book = new Book
-        {
-            Title = createBookDto.Title,
-            Author = createBookDto.Author,
-            Isbn = createBookDto.Isbn,
-            PublishedYear = createBookDto.PublishedYear,
-            IsRead = createBookDto.IsRead
-        };
-
-        var createBook = await _bookRepository.CreateAsync(book);
-        return MapToDto(createBook);
-    }
-
-    public async Task<bool> DeleteBookAsync(int id)
-    {
-        return await _bookRepository.DeleteAsync(id);
+        _categoryRepository = categoryRepository;
     }
 
     public async Task<IEnumerable<BookDto>> GetAllBooksAsync()
@@ -47,6 +30,27 @@ public class BookService : IBookService
         return book == null ? null : MapToDto(book);
     }
 
+    public async Task<BookDto> CreateBookAsync(CreateBookDto createBookDto)
+    {
+        var book = new Book
+        {
+            Title = createBookDto.Title,
+            Author = createBookDto.Author,
+            Isbn = createBookDto.Isbn,
+            PublishedYear = createBookDto.PublishedYear,
+            IsRead = createBookDto.IsRead
+        };
+
+        if (createBookDto.CategoryIds.Any())
+        {
+            var categories = await LoadCategoriesAsync(createBookDto.CategoryIds);
+            book.Categories = categories;
+        }
+
+        var createdBook = await _bookRepository.CreateAsync(book);
+        return MapToDto(createdBook);
+    }
+
     public async Task<BookDto?> UpdateBookAsync(int id, UpdateBookDto updateBookDto)
     {
         var book = new Book
@@ -59,8 +63,25 @@ public class BookService : IBookService
             IsRead = updateBookDto.IsRead
         };
 
+        if (updateBookDto.CategoryIds.Any())
+        {
+            var categories = await LoadCategoriesAsync(updateBookDto.CategoryIds);
+            book.Categories = categories;
+        }
+
         var updatedBook = await _bookRepository.UpdateAsync(book);
         return updatedBook == null ? null : MapToDto(updatedBook);
+    }
+
+    public async Task<bool> DeleteBookAsync(int id)
+    {
+        return await _bookRepository.DeleteAsync(id);
+    }
+
+    private async Task<List<Category>> LoadCategoriesAsync(List<int> categoryIds)
+    {
+        var allCategories = await _categoryRepository.GetAllAsync();
+        return allCategories.Where(c => categoryIds.Contains(c.Id)).ToList();
     }
 
     private static BookDto MapToDto(Book book)
@@ -74,9 +95,8 @@ public class BookService : IBookService
             PublishedYear = book.PublishedYear,
             IsRead = book.IsRead,
             CreatedAt = book.CreatedAt,
-            UpdatedAt = book.UpdatedAt
-
-
+            UpdatedAt = book.UpdatedAt,
+            CategoryIds = book.Categories.Select(c => c.Id).ToList()
         };
     }
 }

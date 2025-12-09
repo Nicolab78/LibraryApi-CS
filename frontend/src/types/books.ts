@@ -7,6 +7,7 @@ export interface Book {
   isRead: boolean;
   createdAt: string;
   updatedAt?: string;
+  categoryIds: number[];
 }
 
 export interface CreateBookDto {
@@ -15,6 +16,7 @@ export interface CreateBookDto {
   isbn?: string;
   publishedYear?: number;
   isRead: boolean;
+  categoryIds: number[];
 }
 
 export interface UpdateBookDto {
@@ -23,4 +25,5 @@ export interface UpdateBookDto {
   isbn?: string;
   publishedYear?: number;
   isRead: boolean;
+  categoryIds: number[];
 }

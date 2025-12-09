@@ -15,11 +15,13 @@ public class BookRepository : IBookRepository
     }
 
     public async Task<Book> CreateAsync(Book book)
-    {
-        _context.Books.Add(book);
-        await _context.SaveChangesAsync();
-        return book;
-    }
+{
+    _context.Books.Add(book);
+    await _context.SaveChangesAsync();
+    return await _context.Books
+        .Include(b => b.Categories)
+        .FirstAsync(b => b.Id == book.Id);
+}
 
     public async Task<bool> DeleteAsync(int id)
     {
@@ -34,28 +36,38 @@ public class BookRepository : IBookRepository
 
     public async Task<IEnumerable<Book>> GetAllAsync()
     {
-        return await _context.Books.ToListAsync();
+        return await _context.Books
+            .Include(b => b.Categories)
+            .ToListAsync();
     }
 
     public async Task<Book?> GetByIdAsync(int id)
     {
-        return await _context.Books.FindAsync(id);
+        return await _context.Books
+            .Include(b => b.Categories)
+            .FirstOrDefaultAsync(b => b.Id == id);
     }
 
     public async Task<Book?> UpdateAsync(Book book)
-    {
-        var existingBook = await _context.Books.FindAsync(book.Id);
-        if (existingBook == null)
-            return null;
+{
+    var existingBook = await _context.Books
+        .Include(b => b.Categories)
+        .FirstOrDefaultAsync(b => b.Id == book.Id);
         
-        existingBook.Title = book.Title;
-        existingBook.Author = book.Author;
-        existingBook.Isbn = book.Isbn;
-        existingBook.PublishedYear = book.PublishedYear;
-        existingBook.IsRead = book.IsRead;
-        existingBook.UpdatedAt = DateTime.UtcNow;
+    if (existingBook == null)
+        return null;
 
-        await _context.SaveChangesAsync();
-        return existingBook;
-    }
+    existingBook.Title = book.Title;
+    existingBook.Author = book.Author;
+    existingBook.Isbn = book.Isbn;
+    existingBook.PublishedYear = book.PublishedYear;
+    existingBook.IsRead = book.IsRead;
+    existingBook.UpdatedAt = DateTime.UtcNow;
+    
+    existingBook.Categories.Clear();
+    existingBook.Categories = book.Categories;
+
+    await _context.SaveChangesAsync();
+    return existingBook;
+}
 }

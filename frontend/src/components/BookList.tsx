@@ -1,13 +1,15 @@
 import type { Book } from '../types/books';
+import type { Category } from '../types/categories';
 import { BookCard } from './BookCard';
 
 interface BookListProps {
   books: Book[];
+  categories: Category[];
   onToggleRead: (id: number) => void;
   onDelete: (id: number) => void;
 }
 
-export function BookList({ books, onToggleRead, onDelete }: BookListProps) {
+export function BookList({ books, categories, onToggleRead, onDelete }: BookListProps) {
   if (books.length === 0) {
     return (
       <div className="empty-state">
@@ -22,7 +24,8 @@ export function BookList({ books, onToggleRead, onDelete }: BookListProps) {
       {books.map((book) => (
         <BookCard 
           key={book.id} 
-          book={book} 
+          book={book}
+          categories={categories}
           onToggleRead={onToggleRead}
           onDelete={onDelete}
         />

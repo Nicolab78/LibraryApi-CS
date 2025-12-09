@@ -1,26 +1,35 @@
 import { useEffect, useState } from 'react';
 import type { Book, CreateBookDto, UpdateBookDto } from './types/books';
+import type { Category, CreateCategoryDto } from './types/categories';
 import { bookService } from './services/bookService';
+import { categoryService } from './services/categoryService';
 import { BookForm } from './components/BookForm';
 import { BookList } from './components/BookList';
+import { CategoryForm } from './components/CategoryForm';
+import { CategoryList } from './components/CategoryList';
 
 function App() {
   const [books, setBooks] = useState<Book[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    loadBooks();
+    loadData();
   }, []);
 
-  const loadBooks = async () => {
+  const loadData = async () => {
     try {
       setLoading(true);
-      const data = await bookService.getAllBooks();
-      setBooks(data);
+      const [booksData, categoriesData] = await Promise.all([
+        bookService.getAllBooks(),
+        categoryService.getAllCategories(),
+      ]);
+      setBooks(booksData);
+      setCategories(categoriesData);
       setError(null);
     } catch (err) {
-      setError('Erreur lors du chargement des livres');
+      setError('Erreur lors du chargement des données');
       console.error(err);
     } finally {
       setLoading(false);
@@ -72,6 +81,32 @@ function App() {
     }
   };
 
+  const handleCreateCategory = async (newCategory: CreateCategoryDto) => {
+    try {
+      const createdCategory = await categoryService.createCategory(newCategory);
+      setCategories([...categories, createdCategory]);
+      setError(null);
+    } catch (err) {
+      setError('Erreur lors de la création de la catégorie');
+      console.error(err);
+    }
+  };
+
+  const handleDeleteCategory = async (id: number) => {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?')) {
+      return;
+    }
+
+    try {
+      await categoryService.deleteCategory(id);
+      setCategories(categories.filter(c => c.id !== id));
+      setError(null);
+    } catch (err) {
+      setError('Erreur lors de la suppression de la catégorie');
+      console.error(err);
+    }
+  };
+
   if (loading) {
     return <div className="loading">Chargement...</div>;
   }
@@ -84,12 +119,20 @@ function App() {
 
       {error && <div className="error-message">{error}</div>}
 
-      <BookForm onSubmit={handleCreateBook} />
-      <BookList 
-        books={books} 
-        onToggleRead={handleToggleRead}
-        onDelete={handleDeleteBook}
-      />
+      <section className="categories-section">
+        <CategoryForm onSubmit={handleCreateCategory} />
+        <CategoryList categories={categories} onDelete={handleDeleteCategory} />
+      </section>
+
+      <section className="books-section">
+        <BookForm onSubmit={handleCreateBook} categories={categories} />
+        <BookList 
+          books={books}
+          categories={categories}
+          onToggleRead={handleToggleRead}
+          onDelete={handleDeleteBook}
+        />
+      </section>
     </div>
   );
 }

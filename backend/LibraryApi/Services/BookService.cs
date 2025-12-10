@@ -30,7 +30,7 @@ public class BookService : IBookService
         return book == null ? null : MapToDto(book);
     }
 
-    public async Task<BookDto> CreateBookAsync(CreateBookDto createBookDto)
+    public async Task<BookDto> CreateBookAsync(CreateBookDto createBookDto, int userId)
     {
         var book = new Book
         {
@@ -38,7 +38,8 @@ public class BookService : IBookService
             Author = createBookDto.Author,
             Isbn = createBookDto.Isbn,
             PublishedYear = createBookDto.PublishedYear,
-            IsRead = createBookDto.IsRead
+            IsRead = createBookDto.IsRead,
+            UserId = userId
         };
 
         if (createBookDto.CategoryIds.Any())
@@ -96,7 +97,8 @@ public class BookService : IBookService
             IsRead = book.IsRead,
             CreatedAt = book.CreatedAt,
             UpdatedAt = book.UpdatedAt,
-            CategoryIds = book.Categories.Select(c => c.Id).ToList()
+            CategoryIds = book.Categories.Select(c => c.Id).ToList(),
+            UserId = book.UserId 
         };
     }
 }

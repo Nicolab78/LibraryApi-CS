@@ -1,13 +1,15 @@
 using LibraryApi.DTOs;
 using LibraryApi.DTOs.Book;
 using LibraryApi.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
+using System.Security.Claims;
 
 namespace LibraryApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize] 
 public class BooksController : ControllerBase
 {
     private readonly IBookService _bookService;
@@ -15,6 +17,12 @@ public class BooksController : ControllerBase
     public BooksController(IBookService bookService)
     {
         _bookService = bookService;
+    }
+
+    private int GetUserId()
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        return int.Parse(userIdClaim ?? "0");
     }
 
     [HttpGet]
@@ -28,23 +36,25 @@ public class BooksController : ControllerBase
     public async Task<ActionResult<BookDto>> GetBookById(int id)
     {
         var book = await _bookService.GetBookByIdAsync(id);
-        if(book == null)
+        if (book == null)
             return NotFound();
+
         return Ok(book);
     }
 
     [HttpPost]
     public async Task<ActionResult<BookDto>> CreateBook(CreateBookDto createBookDto)
     {
-        var book = await _bookService.CreateBookAsync(createBookDto);
-        return CreatedAtAction(nameof(GetBookById), new {id = book.Id}, book);
+        var userId = GetUserId();
+        var book = await _bookService.CreateBookAsync(createBookDto, userId);
+        return CreatedAtAction(nameof(GetBookById), new { id = book.Id }, book);
     }
 
     [HttpPut("{id}")]
     public async Task<ActionResult<BookDto>> UpdateBook(int id, UpdateBookDto updateBookDto)
     {
         var book = await _bookService.UpdateBookAsync(id, updateBookDto);
-        if (book ==null)
+        if (book == null)
             return NotFound();
 
         return Ok(book);
@@ -59,5 +69,4 @@ public class BooksController : ControllerBase
 
         return NoContent();
     }
-
 }

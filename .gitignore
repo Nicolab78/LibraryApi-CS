@@ -3,7 +3,7 @@ backend/**/bin/
 backend/**/obj/
 backend/**/.vs/
 backend/**/*.user
-backend/**/.vscode/
+backend/**/.env
 
 # Frontend
 frontend/node_modules/

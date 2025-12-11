@@ -14,9 +14,9 @@ public class CategoryService : ICategoryService
         _categoryRepository = categoryRepository;
     }
 
-    public async Task<IEnumerable<CategoryDto>> GetAllCategoriesAsync()
+    public async Task<IEnumerable<CategoryDto>> GetAllCategoriesAsync(int userId)
     {
-        var categories = await _categoryRepository.GetAllAsync();
+        var categories = await _categoryRepository.GetAllAsync(userId);
         return categories.Select(MapToDto);
     }
 
@@ -26,11 +26,12 @@ public class CategoryService : ICategoryService
         return category == null ? null : MapToDto(category);
     }
 
-    public async Task<CategoryDto> CreateCategoryAsync(CreateCategoryDto createCategoryDto)
+    public async Task<CategoryDto> CreateCategoryAsync(CreateCategoryDto createCategoryDto, int userId)
     {
         var category = new Category
         {
-            Name = createCategoryDto.Name
+            Name = createCategoryDto.Name,
+            UserId = userId 
         };
 
         var createdCategory = await _categoryRepository.CreateAsync(category);

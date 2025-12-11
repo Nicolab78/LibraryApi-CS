@@ -34,10 +34,11 @@ public class BookRepository : IBookRepository
         return true;
     }
 
-    public async Task<IEnumerable<Book>> GetAllAsync()
+    public async Task<IEnumerable<Book>> GetAllAsync(int userId)
     {
         return await _context.Books
             .Include(b => b.Categories)
+            .Where(b => b.UserId == userId)
             .ToListAsync();
     }
 

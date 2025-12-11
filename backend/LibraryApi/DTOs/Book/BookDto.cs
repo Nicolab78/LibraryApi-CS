@@ -12,4 +12,5 @@ public class BookDto
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public List<int> CategoryIds { get; set; } = new List<int>();
+    public int UserId { get; set; } 
 }

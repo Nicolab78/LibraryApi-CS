@@ -8,4 +8,7 @@ public class Category
     public DateTime? UpdatedAt { get; set; }
 
     public ICollection<Book> Books { set; get; } = new List<Book>();
+
+    public int UserId { get; set; }
+    public User User { get; set; } = null!;
 }

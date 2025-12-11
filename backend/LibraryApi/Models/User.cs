@@ -11,5 +11,8 @@ public class User
 
     public ICollection<Book> Books { get; set; } = new List<Book>();
 
+    public ICollection<Category> Categories { get; set; } = new List<Category>(); 
+
+
 
 }

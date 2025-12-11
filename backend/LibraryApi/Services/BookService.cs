@@ -18,9 +18,9 @@ public class BookService : IBookService
         _categoryRepository = categoryRepository;
     }
 
-    public async Task<IEnumerable<BookDto>> GetAllBooksAsync()
+    public async Task<IEnumerable<BookDto>> GetAllBooksAsync(int userId)
     {
-        var books = await _bookRepository.GetAllAsync();
+        var books = await _bookRepository.GetAllAsync(userId);
         return books.Select(MapToDto);
     }
 
@@ -44,7 +44,7 @@ public class BookService : IBookService
 
         if (createBookDto.CategoryIds.Any())
         {
-            var categories = await LoadCategoriesAsync(createBookDto.CategoryIds);
+            var categories = await LoadCategoriesAsync(createBookDto.CategoryIds, userId);
             book.Categories = categories;
         }
 
@@ -52,7 +52,7 @@ public class BookService : IBookService
         return MapToDto(createdBook);
     }
 
-    public async Task<BookDto?> UpdateBookAsync(int id, UpdateBookDto updateBookDto)
+    public async Task<BookDto?> UpdateBookAsync(int id, UpdateBookDto updateBookDto, int userId)
     {
         var book = new Book
         {
@@ -66,7 +66,7 @@ public class BookService : IBookService
 
         if (updateBookDto.CategoryIds.Any())
         {
-            var categories = await LoadCategoriesAsync(updateBookDto.CategoryIds);
+            var categories = await LoadCategoriesAsync(updateBookDto.CategoryIds, userId);
             book.Categories = categories;
         }
 
@@ -79,9 +79,9 @@ public class BookService : IBookService
         return await _bookRepository.DeleteAsync(id);
     }
 
-    private async Task<List<Category>> LoadCategoriesAsync(List<int> categoryIds)
+    private async Task<List<Category>> LoadCategoriesAsync(List<int> categoryIds, int userId)
     {
-        var allCategories = await _categoryRepository.GetAllAsync();
+        var allCategories = await _categoryRepository.GetAllAsync(userId);
         return allCategories.Where(c => categoryIds.Contains(c.Id)).ToList();
     }
 
@@ -97,8 +97,7 @@ public class BookService : IBookService
             IsRead = book.IsRead,
             CreatedAt = book.CreatedAt,
             UpdatedAt = book.UpdatedAt,
-            CategoryIds = book.Categories.Select(c => c.Id).ToList(),
-            UserId = book.UserId 
+            CategoryIds = book.Categories.Select(c => c.Id).ToList()
         };
     }
 }

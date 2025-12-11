@@ -4,7 +4,7 @@ namespace LibraryApi.Repositories.Interfaces;
 
 public interface ICategoryRepository
 {
-    Task<IEnumerable<Category>> GetAllAsync();
+    Task<IEnumerable<Category>> GetAllAsync(int userId);
     Task<Category?> GetByIdAsync(int id);
     Task<Category> CreateAsync(Category category);
     Task<Category?> UpdateAsync(Category category);

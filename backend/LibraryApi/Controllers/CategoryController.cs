@@ -1,11 +1,14 @@
 using LibraryApi.DTOs.Category;
 using LibraryApi.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace LibraryApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class CategoriesController : ControllerBase
 {
     private readonly ICategoryService _categoryService;
@@ -15,10 +18,17 @@ public class CategoriesController : ControllerBase
         _categoryService = categoryService;
     }
 
+    private int GetUserId()
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        return int.Parse(userIdClaim ?? "0");
+    }
+
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAllCategories()
     {
-        var categories = await _categoryService.GetAllCategoriesAsync();
+        var userId = GetUserId();
+        var categories = await _categoryService.GetAllCategoriesAsync(userId);
         return Ok(categories);
     }
 
@@ -35,7 +45,8 @@ public class CategoriesController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<CategoryDto>> CreateCategory(CreateCategoryDto createCategoryDto)
     {
-        var category = await _categoryService.CreateCategoryAsync(createCategoryDto);
+        var userId = GetUserId();
+        var category = await _categoryService.CreateCategoryAsync(createCategoryDto, userId);
         return CreatedAtAction(nameof(GetCategoryById), new { id = category.Id }, category);
     }
 

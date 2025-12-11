@@ -9,7 +9,7 @@ namespace LibraryApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize] 
+[Authorize]
 public class BooksController : ControllerBase
 {
     private readonly IBookService _bookService;
@@ -28,7 +28,8 @@ public class BooksController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<BookDto>>> GetAllBooks()
     {
-        var books = await _bookService.GetAllBooksAsync();
+        var userId = GetUserId();
+        var books = await _bookService.GetAllBooksAsync(userId);
         return Ok(books);
     }
 
@@ -53,7 +54,8 @@ public class BooksController : ControllerBase
     [HttpPut("{id}")]
     public async Task<ActionResult<BookDto>> UpdateBook(int id, UpdateBookDto updateBookDto)
     {
-        var book = await _bookService.UpdateBookAsync(id, updateBookDto);
+        var userId = GetUserId();
+        var book = await _bookService.UpdateBookAsync(id, updateBookDto, userId);
         if (book == null)
             return NotFound();
 

@@ -6,7 +6,7 @@ Application de gestion de bibliothèque personnelle avec authentification JWT.
 
 - **Backend:** C# ASP.NET Core 10, MySQL, Entity Framework
 - **Frontend:** React TypeScript, Vite
-- **DevOps:** Docker, Docker Compose, GitHub Actions
+- **DevOps:** Docker, Docker Compose, GitHub Actions, Railway, Vercel
 
 ## Installation
 
@@ -48,6 +48,14 @@ npm install
 npm run dev
 ```
 
+## Déploiement
+
+**Backend + MySQL :** Railway  
+**Frontend :** Vercel
+
+**CI/CD :** GitHub Actions build automatique sur push `main`/`develop`
+
+**Demo :** https://library-api-cs.vercel.app (inactif)
 ## Fonctionnalités
 
 - Authentification (inscription/connexion)

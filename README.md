@@ -1,4 +1,4 @@
-# LibraryApp
+# LibraryApp Project
 
 Application de gestion de bibliothèque personnelle avec authentification JWT.
 

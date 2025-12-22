@@ -1,6 +1,7 @@
 [build]
 builder = "DOCKERFILE"
 dockerfilePath = "backend/LibraryApi/Dockerfile"
+buildContext = "backend/LibraryApi"
 
 [deploy]
 startCommand = "dotnet LibraryApi.dll"

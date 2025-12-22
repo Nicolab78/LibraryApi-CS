@@ -16,5 +16,8 @@ frontend/.env
 *.swp
 *.swo
 
+# Environment variables
+.env
+
 # OS
 .DS_Store

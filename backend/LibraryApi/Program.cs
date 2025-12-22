@@ -61,7 +61,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:5173", "http://frontend:80")
+        policy.WithOrigins("http://localhost:5173", "http://frontend:80", "https://library-api-cs.vercel.app")
               .AllowAnyMethod()
               .AllowAnyHeader();
     });

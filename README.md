@@ -1,4 +1,4 @@
-# LibraryApp
+# LibraryApp Project
 
 Application de gestion de bibliothèque personnelle avec authentification JWT.
 
@@ -56,6 +56,7 @@ npm run dev
 **CI/CD :** GitHub Actions build automatique sur push `main`/`develop`
 
 **Demo :** https://library-api-cs.vercel.app (inactif)
+
 ## Fonctionnalités
 
 - Authentification (inscription/connexion)
